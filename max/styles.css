@@ -1,0 +1,26 @@
+h1{
+	font-family:'Lilita One';
+	color:#fff;
+	font-size: 80px;
+}
+p{
+	font-family:'Open Sans';
+	letter-spacing: 2px;
+	line-height: 150%;
+	font-size: 18px;
+	color:#fff;
+	margin: 0 20vmax;
+}
+body{
+	background-color: #7dd1f8;
+	text-align: center;
+}
+img{
+	margin:30px;
+}
+p.signoff {
+	font-style: italic;
+	font-size: 24px;
+	font-weight: 900;
+	margin-bottom: 100px;
+}

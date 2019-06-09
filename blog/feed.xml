@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>How To Hannah</title>
+    <description>Unity tutorials and game dev blog, by Hannah Rose
+</description>
+    <link>http://hannahro.se/blog/</link>
+    <atom:link href="http://hannahro.se/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Mon, 18 Feb 2019 20:29:38 +0000</pubDate>
+    <lastBuildDate>Mon, 18 Feb 2019 20:29:38 +0000</lastBuildDate>
+    <generator>Jekyll v3.2.1</generator>
+    
+      <item>
+        <title>A painting game in Unity - Part 1</title>
+        <description>&lt;p&gt;In this series, we’ll be learning how to make a simple Unity game where you can paint pictures. In this first chapter, we’ll be doing most of the legwork for getting a paintable canvas.&lt;/p&gt;
+
+&lt;p&gt;By the end, you’ll have something more or less like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/end-result-gif.gif&quot; alt=&quot;End result&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;So without waiting any longer, let’s get started!&lt;/p&gt;
+
+&lt;h2 id=&quot;so-what-are-we-actually-making&quot;&gt;So what are we actually making?&lt;/h2&gt;
+
+&lt;p&gt;We’ll be making something like the classic video game, Microsoft Paint. While it might not seem like a game, its core mechanics have been used in all kinds of games, be it a &lt;a href=&quot;https://i.imgur.com/kS3uxQ6.png&quot;&gt;Warioware Minigame&lt;/a&gt;, the mad &lt;a href=&quot;https://q_dork.itch.io/morning-makeup-madness&quot;&gt;Morning Makeup Madness&lt;/a&gt; by &lt;a href=&quot;https://twitter.com/q_dork&quot;&gt;Jenny Jiao Hsia&lt;/a&gt;, Jackbox’s own &lt;a href=&quot;https://cdn.vox-cdn.com/thumbor/5roc0yi29TNf7y-PQgyMpOxYGgQ=/0x0:1920x1080/1200x0/filters:focal(0x0:1920x1080):no_upscale()/cdn.vox-cdn.com/uploads/chorus_asset/file/6334171/drawful-2-screenshot-03_1920.0.jpg&quot;&gt;Drawful&lt;/a&gt;, or drawing a face for a scarecrow in the recent indie gem Pikuniku.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+  &lt;img src=&quot;https://i1.wp.com/switchaboo.com/wp-content/uploads/2019/01/Screen-Shot-2019-01-13-at-12.21.10-pm.png&quot; alt=&quot;Pikuniku, by Sectordub (2019)&quot; /&gt;
+  &lt;figcaption style=&quot;
+    text-align: center;
+&quot;&gt;&lt;i&gt;Pikuniku, by Sectordub (2019)&lt;/i&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;In this and the next few lessons, we’ll just make a simple game about drawing one someone’s face. By the end of this first part, the basics of painting should be in place, and you might have an idea yourself as to how you can make more of it!&lt;/p&gt;
+
+&lt;p&gt;Just a quick preface, this tutorial assumes you have some familiarity of how Unity works. It also uses code without explaining the fundamentals, so some basic code knowledge will help. That said, if you’re not comfortable with code and still want to do the tutorial, I’ll just write all the code up, and there’s no shame in copy pasting it!&lt;/p&gt;
+
+&lt;p&gt;All the files for this tutorial will be made available, and linked at the bottom of each part, so feel free to just skip if you’re the type to learn by poking around.&lt;/p&gt;
+
+&lt;p&gt;We’ll be doing&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;Setting up a scene&lt;/li&gt;
+  &lt;li&gt;Making a second camera that draws to a render texture&lt;/li&gt;
+  &lt;li&gt;Drawing this texture to the screen&lt;/li&gt;
+  &lt;li&gt;Making brushes we can use to draw&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;setting-the-scene&quot;&gt;Setting the scene&lt;/h2&gt;
+
+&lt;p&gt;Make a new Unity project, ideally choosing the &lt;em&gt;2D&lt;/em&gt; template option.&lt;/p&gt;
+
+&lt;p&gt;Next, we just need to set the stage for our painting. What do you want to draw on, if anything? Personally, I’ll be drawing facial hair and makeup on a face. &lt;a href=&quot;/blog/assets/content/drawing-1/face.png&quot;&gt;Here’s the image I’m using for a face&lt;/a&gt;, which I just dragged into the scene, and rotated a little. I also set the camera’s background colour to #3498db.&lt;/p&gt;
+
+&lt;p&gt;If your project template wasn’t 2D, you may also have to change the &lt;em&gt;Clear flags&lt;/em&gt; setting from &lt;em&gt;Skybox&lt;/em&gt; to &lt;em&gt;Solid Color&lt;/em&gt;.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+  &lt;img src=&quot;/blog/assets/content/drawing-1/scene.png&quot; alt=&quot;This is what my scene looks like so far&quot; /&gt;
+  &lt;figcaption style=&quot;
+    text-align: center;
+&quot;&gt;&lt;i&gt;This is what my scene looks like so far&lt;/i&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The actual layout doesn’t matter too much, it’s down to visual taste. You could just put the MS Paint interface onto it, or leave everything white and clear. If you feel like you want to resize or reposition your camera at all, now is the best time to do it, as it’ll get harder after the next step.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-second-camera&quot;&gt;The second camera&lt;/h2&gt;
+
+&lt;p&gt;Unity’s cameras usually just figure out what they’re pointing at, convert what they can see into an image, and show that image on your screen.&lt;/p&gt;
+
+&lt;p&gt;Helpfully, Unity also lets us take that picture, and instead of drawing it to the screen, use it as a file in our project. This could be used to make working security cameras in games, by drawing what a second camera sees to a security feed screen in your game world.&lt;/p&gt;
+
+&lt;p&gt;We’ll be using them in a slightly unconventional way to handle the drawing in our game in a rather quick to make and rather effective way. We’ll have a second camera that draws any paint brushes it sees onto an image, but never erases the old brush strokes.&lt;/p&gt;
+
+&lt;p&gt;To make sure we keep all the settings from the first camera identical, I’d recommend duplicating your first camera. Select it in your hierarchy, then copy and paste it. Rename it to “Drawing Camera” or something similar for clarity.&lt;/p&gt;
+
+&lt;p&gt;We’ll want to keep the Main camera and the Drawing camera always pointed the same way, and the easiest way to do this is to make the drawing camera a child of the main camera, which we do by dragging the Drawing camera into the Main one.&lt;/p&gt;
+
+&lt;p&gt;Finally, this Drawing camera has an Audio Listener component, just like the original one had. Unity doesn’t like there being several Audio Listeners in the scene, so it’s best to remove that component.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+  &lt;img src=&quot;/blog/assets/content/drawing-1/camera-gif.gif&quot; alt=&quot;All the steps we just covered are shown here&quot; /&gt;
+  &lt;figcaption style=&quot;
+    text-align: center;
+&quot;&gt;&lt;i&gt;All the steps we just covered are shown here&lt;/i&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;You’re also going to need to create a raw image over your screen, which we’ll use to show what our Drawing Camera sees. Right click in your Hierarchy, and create a new raw image. For now, leave it as is, a white square in the middle of your screen.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/raw-image-gif.gif&quot; alt=&quot;Create a raw image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;and-now-some-code&quot;&gt;And now some code&lt;/h3&gt;
+
+&lt;p&gt;Next, we’ll pipe what this camera sees into a render texture. While we can do this next step in the Unity editor, it tends to not work on different screen sizes if you do this that way. So we’ll set up our texture with code.&lt;/p&gt;
+
+&lt;p&gt;Create a new script in your project, and open it up. I called mine &lt;em&gt;DrawingCamera&lt;/em&gt;&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;UnityEngine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;UnityEngine.UI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;DrawingCamera&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MonoBehaviour&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Camera&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RawImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;overlayImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;targetTexture&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RenderTexture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Screen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Screen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;overlayImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;texture&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;targetTexture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;There’s three things we’ve added to the default Unity script in here. Let’s break them down.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;UnityEngine.UI&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Depending on your code editor, this could add itself. We need this line to say “This script is using Unity UI code”, which lets us manipulate the Raw Image we made.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Camera&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RawImage&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;overlayImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;These are two variables we’ll use to know where our drawing camera, and the raw image we created are. Simple enough, we need to use those objects, so we’ll keep them as variables.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Start&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;targetTexture&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;RenderTexture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Screen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;width&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Screen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;height&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;24&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;overlayImage&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;texture&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;drawingCamera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;targetTexture&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This is the real meat of our script. When we run the game, this script does the following:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Create a new render texture, based on the size of your screen (your game’s screen, not your computer screen)&lt;/li&gt;
+  &lt;li&gt;Sets that texture as the drawing camera’s target. That means the drawing camera will draw to this new texture&lt;/li&gt;
+  &lt;li&gt;Takes our raw image, and makes it draw the contents of our render texture, which in turn is what the camera sees&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;With this script set up, our drawing camera will draw what it sees to our little white box in the middle of our screen! Now we just need to set it up.&lt;/p&gt;
+
+&lt;p&gt;Select your &lt;em&gt;Drawing Camera&lt;/em&gt;, and add this new script to it. Then, set the variables we made by dragging the Drawing Camera into the &lt;em&gt;Drawing Camera&lt;/em&gt; field, and our Raw Image into the &lt;em&gt;Overlay Image&lt;/em&gt; field.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/camera-setup-gif.gif&quot; alt=&quot;Camera setup&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;If you run your game now, the white square is replaced by a mini version of your scene. It even reacts if you move the pictures around!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/camera-face-demo-gif.gif&quot; alt=&quot;Moving a face&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;a-few-more-settings-tweaks&quot;&gt;A few more settings tweaks&lt;/h3&gt;
+
+&lt;p&gt;Only two more things to do for this step. First, we want to make our white image take up the whole screen. You do this by selecting the &lt;em&gt;Raw Image&lt;/em&gt;, then over in the inspector, you can make the raw image stretch to fill the screen, regardless of screen size, by clicking on the &lt;em&gt;Anchor Presets&lt;/em&gt; image (by default it looks like a square with a red plus going over it), holding Alt, and clicking the box with the horizontal and vertical blue arrows, in the lower left corner.&lt;/p&gt;
+
+&lt;figure class=&quot;image&quot;&gt;
+  &lt;img src=&quot;/blog/assets/content/drawing-1/fullscreen.jpg&quot; alt=&quot;It's a difficult UI to explain, so this might help&quot; /&gt;
+  &lt;figcaption style=&quot;
+    text-align: center;
+&quot;&gt;&lt;i&gt;It's a difficult UI to explain, so this might help&lt;/i&gt;&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Finally, select your camera, and set the clear flags to &lt;em&gt;Don’t Clear&lt;/em&gt;. Normally, cameras will paint over everything they saw last frame with their background colour, so the image from the last frame doesn’t show up. &lt;em&gt;Don’t Clear&lt;/em&gt; changes this, meaning every frame is drawn on top of the previous one.&lt;/p&gt;
+
+&lt;p&gt;If you run the game now, and move the face around a bit, you should see what this means, and you might start to see how this is all going to work.&lt;/p&gt;
+
+&lt;p&gt;This is what the last two steps look like, and the end result.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/effect-demo-gif.gif&quot; alt=&quot;Moving a face&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;brush-hour&quot;&gt;Brush Hour&lt;/h2&gt;
+
+&lt;p&gt;Before anything else, the raw image is going to get in the way. I like to work around this by just setting the Texture to &lt;em&gt;UIMask&lt;/em&gt;, an inbuilt texture that’s just fully transparent. Our script will replace it when we run the game, and now we don’t have to see it as we work.&lt;/p&gt;
+
+&lt;p&gt;What’s a painting game without brushes? We’ll start with just a simple circle brush. I’d recommend having it full white if possible, so that we can change the brush’s colour in the Unity editor. You can get mine &lt;a href=&quot;/blog/assets/content/drawing-1/face.png&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Drag it into your scene, and give it some colour in the SpriteRenderer’s inspector. Mine is #2C3E50. You could move the brush around and get the same effect as you got with the face, but now we’ll make the effect only work for our brushes, using Unity’s layer system.&lt;/p&gt;
+
+&lt;p&gt;With the brush selected, you should see &lt;em&gt;Layer: Default&lt;/em&gt; over in the top right corner of the inspector. If you click that, you’ll have the option to add a new layer. Do so, and add a brushes layer, then go back to your brush and set its layer to your new one.&lt;/p&gt;
+
+&lt;p&gt;Then, over in our drawing camera, we can restrict the layers it sees, so it only sees the Brushes layer. Click on the &lt;em&gt;Culling Mask&lt;/em&gt; option, and select none, then add &lt;em&gt;Brushes&lt;/em&gt;. Now when you run, you’ll get the painting effect, but only with the brush.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/layers-gif.gif&quot; alt=&quot;What the those steps look like&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;brushes-that-follow-the-mouse&quot;&gt;Brushes that follow the mouse&lt;/h3&gt;
+
+&lt;p&gt;Obviously moving the brush head in the inspector won’t work for a real game, so we’ll make our brushes follow the player’s mouse, and only be active when the left button is held down.&lt;/p&gt;
+
+&lt;p&gt;It’s code time! This is a script that’ll make the object you put it on follow the mouse, and turn visible only when the mouse button is down.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;UnityEngine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;using&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;System.Collections&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Brush&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;MonoBehaviour&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;SpriteRenderer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;spriteRenderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Vector3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Camera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ScreenToWorldPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mousePosition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;gameObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;spriteRenderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enabled&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetMouseButton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Nothing too wild in this one, but let’s break it down.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;Vector3&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Camera&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ScreenToWorldPoint&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;mousePosition&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;z&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;gameObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;position&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mousePos&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;These three lines get the mouse’s position in screen space (which pixel of your screen is the mouse on?).&lt;/p&gt;
+
+&lt;p&gt;ScreenToWorldPoint uses the main camera to find out where the mouse is in the game’s space. The line where we set the z to 0 is because by default, the position this makes will be at the same z position as the camera, which means it’ll be on the camera, not in front of it (feel free to cut the line and see how this breaks). Finally, we just set the object with this script to the mouse position.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;spriteRenderer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;enabled&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Input&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;GetMouseButton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This is a nice one line shorthand, which gets the boolean “true or false” answer to “Is the left mouse button being pressed?”, and feeds that answer into the boolean “should the graphic be drawing, true or false?”. So if the mouse is being held, the graphic is drawn, and if the mouse is not held, the graphic is not drawn.&lt;/p&gt;
+
+&lt;p&gt;Code done! Head over to the inspector, put this script on your brush, drag the brush’s graphic into the &lt;em&gt;Sprite Renderer&lt;/em&gt; field of your new script, and you’re done!&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/blog/assets/content/drawing-1/end-result-gif.gif&quot; alt=&quot;The final step&quot; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&quot;in-conclusion&quot;&gt;In conclusion&lt;/h2&gt;
+
+&lt;p&gt;We’ve made a basic drawing game. You’ve got one brush in it, but you could easily change the colour or shape of that brush. You might have your own ideas as to how you can extend this, but I’ll link Part 2 down here once it’s done.&lt;/p&gt;
+
+&lt;p&gt;If you want it, you can get the full files for the project &lt;a href=&quot;https://github.com/Hannaesthetic/Drawing-Game-Source/tree/master/Part%201&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Finally, if you have any feedback, questions, or suggestions, please let me know either on this blog, or over at &lt;a href=&quot;https://twitter.com/hannaesthetic&quot;&gt;my Twitter&lt;/a&gt;. Otherwise, please share the tutorial, or let me know if it was helpful!&lt;/p&gt;
+</description>
+        <pubDate>Mon, 18 Feb 2019 18:30:30 +0000</pubDate>
+        <link>http://hannahro.se/blog/tutorials/2019/02/18/paint-game-part-1.html</link>
+        <guid isPermaLink="true">http://hannahro.se/blog/tutorials/2019/02/18/paint-game-part-1.html</guid>
+        
+        
+        <category>tutorials</category>
+        
+      </item>
+    
+      <item>
+        <title>Starborard, a blog!</title>
+        <description>&lt;p&gt;Ahoy mateys!&lt;/p&gt;
+
+&lt;p&gt;I’ve started up a blog, partially cause everyone and their cat is doing it, But mostly, it’s because blogs are visibility, visibilty is accountability, and accountability, and accountability keeps me from sitting on my lazy butt all day, rather keeping me on my other, far more active butt.&lt;/p&gt;
+
+&lt;p&gt;Anyway.&lt;/p&gt;
+
+&lt;p&gt;I’m going to be posting devlogs, postmortems for my games, tutorials for how to do interesting things I accidentally make while panicking at a game jam.&lt;/p&gt;
+
+&lt;p&gt;If you ever have requests for posts, questions, or hot tips for making hot chocolate, hit me up on my &lt;a href=&quot;https://twitter.com/hannaesthetic&quot;&gt;Twitter&lt;/a&gt;, or drop me an &lt;a href=&quot;mailto:hannaesthetic.r@gmail.com&quot;&gt;email&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Thanks for swinging by, and hope you find something useful!&lt;/p&gt;
+</description>
+        <pubDate>Sun, 10 Feb 2019 08:43:59 +0000</pubDate>
+        <link>http://hannahro.se/blog/announcements/2019/02/10/intro.html</link>
+        <guid isPermaLink="true">http://hannahro.se/blog/announcements/2019/02/10/intro.html</guid>
+        
+        
+        <category>announcements</category>
+        
+      </item>
+    
+  </channel>
+</rss>
