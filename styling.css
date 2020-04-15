@@ -89,6 +89,9 @@ a:hover{
 .whited h1 {
 	color: #fff;
 }
+.whited.background-blue a {
+	color: #f5d76e;
+}
 .whited h2 {
 	color: #fff;
 }
